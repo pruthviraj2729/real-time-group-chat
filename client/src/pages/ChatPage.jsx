@@ -1,30 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react'
-import io from 'socket.io-client'
-import {useSelector} from "react-redux"
+import io from "socket.io-client";
+import {useSelector} from 'react-redux'
 
 const ChatPage = () => {
-  const {accessToken} = useSelector((state) => state.auth)
+  const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([])
-  const [inputValue, setInputValue] = useState("")
   const socketRef = useRef(null)
-
+  const {accessToken} = useSelector((state) => state.auth)
 
   function sendMessage(e){
     e.preventDefault();
     socketRef.current.emit("message", {
-      content: inputValue
+      content:inputValue
     })
-    setMessages((prevMessages) => [...prevMessages, {content: inputValue, outgoing: true}])
-    setInputValue("");
-    
-  }
+    setMessages((prevMessages) => [...prevMessages, {content: inputValue, outgoing: true}]);
+    setInputValue("")
 
+  }
   useEffect(() => {
     const socket = io({
       extraHeaders: {
-        Authorization: `Bearer ${accessToken} `
+        Authorization: `Bearer ${accessToken}`
       }
     })
+
     socketRef.current = socket;
 
     socket.on("message", (msg) => {
@@ -35,16 +34,21 @@ const ChatPage = () => {
       socket.disconnect()
     }
   },[])
-
   return (
-        <section className="chat-page">
-            <div className="conversation-area">
+    <section className="chat-page">
+        <div className="conversation-area">
                 <div className="messages">
-                    {messages.map((msg, index) => (
+                  {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.outgoing ? "outgoing" : "incoming"}`}>
+                      {msg.content}
+                      {msg.email ? <small>{msg.email}</small> : null}
+                    </div>
+                  ))}
+                    {/* {messages.map((msg, index) => (
                         <div key={index} className={`message ${msg.outgoing ? "outgoing" : "incoming"}`}>{msg.content}
                         {msg.email ? <small>{msg.email}</small> : null}
                         </div>
-                    ))}
+                    ))} */}
                 </div>
                 <div className="input-area">
                     <input
@@ -55,17 +59,12 @@ const ChatPage = () => {
                         onClick={sendMessage}
                         type="button">Send</button>
                 </div>
-            </div>
-        </section>
+        </div>
+    </section>
   );
 }
 
 export default ChatPage
-
-
-
-
-
 
 
 // import React, { useEffect, useRef, useState } from 'react';
