@@ -8,7 +8,6 @@ import initSocketServer from './sockets/socket.server.js'
 try {
   await connectDB();
 
-
   const httpServer = createServer(app)
   initSocketServer(httpServer)
  
